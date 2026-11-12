@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form</title>
+</head>
+<body>
+
+  <h1>Contact Us</h1>
+
+  <form id="f">
+    <input name="name" placeholder="Name" required>
+    <input name="email" type="email" placeholder="Email" required>
+    <textarea name="message" placeholder="Message"></textarea>
+    <button type="submit">Send</button>
+    <p id="status"></p>
+  </form>
+
+  <script>
+    const API_URL = "YOUR_VERCEL_API_URL";
+
+    document.getElementById('f').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const form = e.target;
+      const status = document.getElementById('status');
+      const button = form.querySelector('button');
+      const data = Object.fromEntries(new FormData(form));
+
+      button.disabled = true;
+      status.textContent = 'Sending...';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Submission failed');
+        }
+
+        status.textContent = 'Message sent successfully!';
+        form.reset();
+
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
